@@ -25,6 +25,7 @@
     },
     "dependencies": {
         "phaser": "^3.90.0",
+        "phaser-box2d": "^1.1.0",
         "terser": "^5.39.0"
     }
 }
