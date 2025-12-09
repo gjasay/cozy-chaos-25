@@ -1,20 +1,21 @@
-import {Scene} from "phaser";
-import {World} from "planck";
+import { Scene } from "phaser";
+import { World } from "planck";
+import { WorldConfig } from "../../../../config/World";
 
 export class Game extends Scene {
-    camera: Phaser.Cameras.Scene2D.Camera;
-    world: World;
+  camera: Phaser.Cameras.Scene2D.Camera;
+  world: World;
 
-    constructor() {
-        super("Game");
+  constructor() {
+    super("Game");
 
-        this.world = new World({
-            gravity: { x: 0, y: 0 },
-        });
-    }
+    this.world = new World({
+      gravity: WorldConfig.gravity,
+    });
+  }
 
-    create() {
-        this.camera = this.cameras.main;
-        this.camera.setBackgroundColor(0x00ff00);
-    }
+  create() {
+    this.camera = this.cameras.main;
+    this.camera.setBackgroundColor(0x00ff00);
+  }
 }
