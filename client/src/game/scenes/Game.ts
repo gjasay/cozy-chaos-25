@@ -51,7 +51,7 @@ export class Game extends Scene {
     }
   }
 
-  fixedUpdate(dt: number) {
+  fixedUpdate(_dt: number) {
     this.world.step(PHYSICS_TIMESTEP, 8, 3);
   }
 }
