@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "phaser": "^3.90.0",
+    "planck": "^1.4.2",
     "terser": "^5.39.0"
   }
 }
