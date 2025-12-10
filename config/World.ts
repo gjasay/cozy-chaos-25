@@ -5,6 +5,8 @@ export const WorldConfig = {
 export const PIXELS_PER_METER = 50;
 export const FIXED_TIMESTEP = 1000 / 60;
 export const PHYSICS_TIMESTEP = FIXED_TIMESTEP / 1000;
+export const VELOCITY_ITERATIONS = 8;
+export const POSITION_ITERATIONS = 3;
 
 export function pixelsToMeters(pixels: number): number {
   return pixels / PIXELS_PER_METER;
