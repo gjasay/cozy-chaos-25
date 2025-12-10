@@ -8,19 +8,15 @@ import {
   WorldConfig,
 } from "../../../../config/World";
 import PhysicsSprite from "../objects/PhysicsSprite";
-import { Client, getStateCallbacks, Room } from "colyseus.js";
+import { NetworkManager } from "../util/NetworkManager";
 import { CircleState } from "../../../schema/CircleState";
-import { GameState } from "../../../schema/GameState";
 
 export class Game extends Scene {
   camera: Phaser.Cameras.Scene2D.Camera;
   world: World;
   ball: PhysicsSprite;
   accumulator: number = 0;
-  client: Client;
-  room: Room<GameState>;
-  $: any;
-
+  nm: NetworkManager;
   constructor() {
     super("Game");
 
@@ -33,36 +29,18 @@ export class Game extends Scene {
     this.camera = this.cameras.main;
     this.camera.setBackgroundColor(0xffffff);
 
-    this.client = new Client("ws://localhost:2567");
+    this.nm = NetworkManager.getInstance();
 
-    try {
-      this.room = await this.client.joinOrCreate("my_room");
-      console.log("joined successfully", this.room);
-    } catch (error) {
-      console.error("Failed to join room:", error);
-    }
+    await this.nm.connect({
+      endpoint: "ws://localhost:2567",
+      roomName: "my_room",
+    });
 
-    this.$ = getStateCallbacks(this.room);
-
-    this.$(this.room.state).balls.onAdd((ball: CircleState) => {
-      const sprite = this.add.circle(ball.x, ball.y, ball.radius, 0x00ff00, 1);
-
-      this.$(ball).listen("y", (value: number) => {
-        this.add.tween({
-          targets: sprite,
-          y: value,
-          duration: 50,
-          ease: "Linear",
-        });
-      });
-      this.$(ball).listen("x", (value: number) => {
-        this.add.tween({
-          targets: sprite,
-          x: value,
-          duration: 50,
-          ease: "Linear",
-        });
-      });
+    this.nm.onAdd("balls", (ball: CircleState) => {
+      const $ = this.nm.getCallbacks();
+      $(ball).listen("y", (cur: any, _prev: any) => {
+        console.log(cur);
+      })
     });
 
     this.ball = new PhysicsSprite(this, 400, 300, "ball", 0, {
