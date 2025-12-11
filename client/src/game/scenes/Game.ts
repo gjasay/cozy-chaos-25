@@ -10,6 +10,8 @@ import {
 import PhysicsSprite from "../objects/PhysicsSprite";
 import { NetworkManager } from "../util/NetworkManager";
 import { CircleState } from "../../../schema/CircleState";
+import { NetworkedSprite } from "../objects/NetworkedSprite";
+import { InputHandler } from "../util/InputHandler";
 
 export class Game extends Scene {
   camera: Phaser.Cameras.Scene2D.Camera;
@@ -17,6 +19,7 @@ export class Game extends Scene {
   ball: PhysicsSprite;
   accumulator: number = 0;
   nm: NetworkManager;
+  inputHandler: InputHandler;
   constructor() {
     super("Game");
 
@@ -30,6 +33,13 @@ export class Game extends Scene {
     this.camera.setBackgroundColor(0xffffff);
 
     this.nm = NetworkManager.getInstance();
+    this.inputHandler = new InputHandler(this, {
+      left: ["A", Phaser.Input.Keyboard.KeyCodes.LEFT],
+      right: ["D", Phaser.Input.Keyboard.KeyCodes.RIGHT],
+      jump: ["W", Phaser.Input.Keyboard.KeyCodes.SPACE, Phaser.Input.Keyboard.KeyCodes.UP],
+    })
+    
+    this.inputHandler.startListening();
 
     await this.nm.connect({
       endpoint: "ws://localhost:2567",
@@ -37,18 +47,28 @@ export class Game extends Scene {
     });
 
     this.nm.onAdd("balls", (ball: CircleState) => {
+      const sprite = new NetworkedSprite(
+        this,
+        ball.x,
+        ball.y,
+        "ball",
+        false,
+        {
+          enabled: true
+        }
+      )
       const $ = this.nm.getCallbacks();
-      $(ball).listen("y", (cur: any, _prev: any) => {
-        console.log(cur);
-      })
+      $(ball).onChange(() => {
+        sprite.applyServerState(ball);
+      });
     });
 
-    this.ball = new PhysicsSprite(this, 400, 300, "ball", 0, {
-      enabled: true,
-    });
-    this.ball.createCircleBody(15, {
-      restitution: 0.8,
-    });
+    // this.ball = new PhysicsSprite(this, 400, 300, "ball", 0, {
+    //   enabled: true,
+    // });
+    // this.ball.createCircleBody(15, {
+    //   restitution: 0.8,
+    // });
 
     const logo = new PhysicsSprite(this, 400, 600, "logo", 0, {
       enabled: true,
