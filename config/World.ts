@@ -1,5 +1,10 @@
 export const WorldConfig = {
-  gravity: { x: 0, y: 10 },
+  gravity: { x: 0, y: 15 },
+};
+
+export const MapConfig = {
+  scale: 0.5,
+  offsetY: 70,
 };
 
 export const PIXELS_PER_METER = 50;

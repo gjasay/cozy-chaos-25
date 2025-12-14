@@ -8,6 +8,7 @@ export type BodyOptions = Partial<BodyDef & FixtureDef>;
 
 class PhysicsObject {
   protected world: World;
+  protected room: MyRoom;
   public body: Body;
   protected initialX: number;
   protected initialY: number;
@@ -16,6 +17,7 @@ class PhysicsObject {
 
   constructor(room: MyRoom, x: number, y: number, state: PhysicsObjectState) {
     this.world = room.world;
+    this.room = room;
     this.eventEmitter = room.eventEmitter;
     this.state = state;
     this.initialX = x / PIXELS_PER_METER;
@@ -40,7 +42,7 @@ class PhysicsObject {
     };
 
     this.body.createFixture(fixtureDef);
-    this.body.setUserData(this);
+    this.body.setUserData(this.state);
 
     return this.body;
   }
@@ -65,7 +67,7 @@ class PhysicsObject {
     };
 
     this.body.createFixture(fixtureDef);
-    this.body.setUserData(this);
+    this.body.setUserData(this.state);
 
     return this.body;
   }
@@ -121,6 +123,10 @@ class PhysicsObject {
   public setVelocity(vx: number, vy: number): void {
     if (!this.body) return;
     this.body.setLinearVelocity(new Vec2(vx, vy));
+  }
+
+  public getBody(): Body | undefined {
+    return this.body;
   }
 
   public getVelocity(): { x: number; y: number } {

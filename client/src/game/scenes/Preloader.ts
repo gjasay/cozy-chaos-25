@@ -1,4 +1,5 @@
 import { Scene } from "phaser";
+import mapData from "../../../../config/Map_1/Map_1.json";
 
 export class Preloader extends Scene {
   constructor() {
@@ -28,6 +29,10 @@ export class Preloader extends Scene {
 
     this.load.image("logo", "logo.png");
     this.load.image("ball", "ball.png");
+    this.load.spritesheet("map_tiles", "Map_1.png", {
+      frameWidth: mapData.tile_size,
+      frameHeight: mapData.tile_size,
+    });
   }
 
   create() {

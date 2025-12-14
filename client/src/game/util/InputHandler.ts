@@ -1,7 +1,7 @@
 import { NetworkManager } from "./NetworkManager";
 import * as Phaser from "phaser";
 
-interface IInputPayload {
+export interface LocalInputState {
   [key: string]: boolean;
 }
 
@@ -11,6 +11,7 @@ interface IInputActions {
 
 export class InputHandler {
   private _input: IInputPayload;
+  // Expose current input for local prediction.
   get input() {
     return this._input;
   }
@@ -49,7 +50,7 @@ export class InputHandler {
         }),
       );
     }
-    
+
     this._scene.events.addListener("update", () => this.sync());
   }
 
@@ -68,7 +69,7 @@ export class InputHandler {
 
   private handleInput(key: string, value: boolean): void {
     if (key in this._input) {
-      this._input[key as keyof IInputPayload] = value;
+      this._input[key as keyof LocalInputState] = value;
     }
   }
 

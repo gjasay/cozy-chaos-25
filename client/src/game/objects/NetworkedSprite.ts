@@ -1,6 +1,6 @@
 import PhysicsSprite from "./PhysicsSprite";
 import { PIXELS_PER_METER } from "../../../../config/World";
-import { Vec2 } from "planck";
+import { Vec2, Body, Circle, Box } from "planck";
 import { Game } from "../scenes/Game";
 import { PhysicsObjectState } from "../../../schema/PhysicsObjectState";
 import { CircleState } from "../../../schema/CircleState";
@@ -21,6 +21,8 @@ export class NetworkedSprite {
   physicsSprite: PhysicsSprite | null = null;
   ghostSprite: Phaser.GameObjects.Sprite | null = null;
   ghostTween: Phaser.Tweens.Tween | null = null;
+  collisionBody: planck.Body | null = null;
+  collisionShape: "circle" | "box" = "circle";
 
   debugOptions: NetworkDebugOptions = {
     enabled: false,
@@ -64,6 +66,7 @@ export class NetworkedSprite {
       this.ghostSprite = scene.add.sprite(x, y, texture);
       this.serverX = x;
       this.serverY = y;
+      this.ensureCollisionBody();
     }
 
     if (this.debugOptions.enabled) {
@@ -93,6 +96,7 @@ export class NetworkedSprite {
       this.width = (state as BoxState).width;
       this.height = (state as BoxState).height;
     }
+    this.ensureCollisionBody();
 
     // Local reconciliation
     if (this.isLocal && this.physicsSprite) {
@@ -152,6 +156,63 @@ export class NetworkedSprite {
   setInputVelocity(vx: number, vy: number) {
     if (!this.isLocal || !this.physicsSprite) return;
     this.physicsSprite.setVelocity(vx, vy);
+  }
+
+  private ensureCollisionBody() {
+    if (this.isLocal) return;
+    const world = this.scene.world;
+
+    // Recreate if missing or shape changed.
+    const needsCircle = this.shape === "circle";
+    const needsBox = this.shape === "box";
+    const radius = this.radius / PIXELS_PER_METER;
+    const halfW = this.width / PIXELS_PER_METER / 2;
+    const halfH = this.height / PIXELS_PER_METER / 2;
+
+    const shapeMismatch =
+      (needsCircle && this.collisionShape !== "circle") ||
+      (needsBox && this.collisionShape !== "box");
+
+    if (!this.collisionBody || shapeMismatch) {
+      if (this.collisionBody) {
+        world.destroyBody(this.collisionBody);
+      }
+      this.collisionBody = world.createBody({
+        type: "kinematic",
+        position: new Vec2(
+          this.serverX / PIXELS_PER_METER,
+          this.serverY / PIXELS_PER_METER,
+        ),
+        bullet: true,
+      });
+      const fixtureDef =
+        this.shape === "circle"
+          ? { shape: new Circle(radius), friction: 0, restitution: 0 }
+          : {
+              shape: new Box(halfW, halfH),
+              friction: 0,
+              restitution: 0,
+            };
+      this.collisionBody.createFixture(fixtureDef);
+      this.collisionBody.setUserData({ layer: "player" });
+      this.collisionShape = this.shape;
+    }
+
+    if (this.collisionBody) {
+      this.collisionBody.setTransform(
+        new Vec2(
+          this.serverX / PIXELS_PER_METER,
+          this.serverY / PIXELS_PER_METER,
+        ),
+        this.serverAngle,
+      );
+      this.collisionBody.setLinearVelocity(
+        new Vec2(
+          this.serverVx / PIXELS_PER_METER,
+          this.serverVy / PIXELS_PER_METER,
+        ),
+      );
+    }
   }
 
   drawDebug() {
