@@ -139,7 +139,7 @@ export class NetworkManager {
   ): void {
     if (this.room) {
       const $ = Colyseus.getStateCallbacks(this.room);
-      
+
       //@ts-ignore implicity any type
       $(this.room.state)[state].listen(property, callback);
     }

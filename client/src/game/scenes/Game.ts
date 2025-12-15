@@ -54,7 +54,7 @@ export class Game extends Scene {
     this.inputHandler.startListening();
     console.log("Connecting to server...");
     await this.nm.connect({
-      endpoint: "wss://us-dfw-73cadcad.colyseus.cloud",
+      endpoint: import.meta.env.VITE_SERVER_URL,
       roomName: "my_room",
     });
     console.log("Connected to server.");
