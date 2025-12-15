@@ -1,6 +1,7 @@
 import config from "@colyseus/tools";
 import { monitor } from "@colyseus/monitor";
 import { playground } from "@colyseus/playground";
+import cors from "cors";
 
 /**
  * Import your Room files
@@ -25,6 +26,11 @@ export default config({
         app.get("/hello_world", (req, res) => {
             res.send("It's time to kick ass and chew bubblegum!");
         });
+        
+      app.use(cors({
+        origin: "https://cozy-chaos-25.vercel.app",
+        credentials: true
+      }));
 
         /**
          * Use @colyseus/playground
