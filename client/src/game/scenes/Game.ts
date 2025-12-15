@@ -54,7 +54,7 @@ export class Game extends Scene {
     this.inputHandler.startListening();
     console.log("Connecting to server...");
     await this.nm.connect({
-      endpoint: "ws://localhost:2567",
+      endpoint: "wss://us-dfw-73cadcad.colyseus.cloud",
       roomName: "my_room",
     });
     console.log("Connected to server.");
