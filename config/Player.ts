@@ -12,7 +12,7 @@ export const PlayerConfig = {
   speed: 6,
   horizontalAccel: 120,
   horizontalDecel: 40,
-  jumpImpulse: 1.5,
+  jumpImpulse: 20,
 };
 
 export interface InputState {
