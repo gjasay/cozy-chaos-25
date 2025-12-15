@@ -1,5 +1,5 @@
 export const WorldConfig = {
-  gravity: { x: 0, y: 50 },
+  gravity: { x: 0, y: 40 },
 };
 
 export const MapConfig = {
