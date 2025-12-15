@@ -36,7 +36,6 @@
     "@colyseus/tools": "^0.16.0",
     "@types/cors": "^2.8.19",
     "colyseus": "^0.16.0",
-    "cors": "^2.8.5",
     "express": "^4.18.2",
     "planck": "^1.4.2"
   }
