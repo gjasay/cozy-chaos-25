@@ -6,6 +6,6 @@ COPY ./config ./config
 COPY ./server ./server
 
 WORKDIR /app/server
-RUN npm i
+RUN npm i && npm run build
 
-CMD ["npm", "start"]
+CMD ["node", "build/server/src/index.js"]
